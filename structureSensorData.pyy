@@ -1,0 +1,28 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+def prepare_air_quality_data(df):
+    """
+    Prepare sensor data for machine learning models
+    """
+    # Convert timestamp to datetime and extract features
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df['hour'] = df['timestamp'].dt.hour
+    df['day_of_week'] = df['timestamp'].dt.dayofweek
+    df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+    
+    # Feature selection
+    features = ['temperature', 'humidity', 'pm25', 'pm10', 'mq135', 'mq7', 'mq2', 
+                'hour', 'day_of_week', 'is_weekend']
+    
+    # Handle missing values
+    df[features] = df[features].fillna(method='ffill')
+    
+    return df, features
+
+# Load your data
+df = pd.read_csv('sensor_data.csv')
+df, features = prepare_air_quality_data(df)
+
